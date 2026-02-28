@@ -7,7 +7,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="backdrop-blur-xl bg-white/80 dark:bg-white/10 border-t border-black/10 dark:border-white/20 mt-auto">
+    <footer className="mt-auto overflow-hidden rounded-t-2xl border-t border-black/10 bg-white/80 backdrop-blur-xl dark:border-white/20 dark:bg-white/10">
       <div className="container mx-auto max-w-7xl px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
@@ -36,13 +36,28 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/terms" className="text-foreground/70 hover:text-foreground text-sm transition-colors">
-                  Terms of Service
+                <Link href="/recipes" className="text-foreground/70 hover:text-foreground text-sm transition-colors">
+                  Recipes
+                </Link>
+              </li>
+              <li>
+                <Link href="/saved" className="text-foreground/70 hover:text-foreground text-sm transition-colors">
+                  Saved Recipes
+                </Link>
+              </li>
+              <li>
+                <Link href="/history" className="text-foreground/70 hover:text-foreground text-sm transition-colors">
+                  History
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="text-foreground/70 hover:text-foreground text-sm transition-colors">
                   Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-foreground/70 hover:text-foreground text-sm transition-colors">
+                  Terms of Service
                 </Link>
               </li>
             </ul>

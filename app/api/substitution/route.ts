@@ -1,5 +1,4 @@
-import { streamText } from "ai"
-import { groq, GROQ_MODELS } from "@/lib/groq"
+import { createGroqCompletion } from "@/lib/groq-client"
 
 export async function POST(req: Request) {
   try {
@@ -18,18 +17,20 @@ Be concise and practical. Format each substitution clearly.
 ${recipeContext ? `Current recipe context: ${recipeContext}` : ""}
 ${dietaryRestrictions ? `Dietary restrictions to consider: ${dietaryRestrictions}` : ""}`
 
-    const result = streamText({
-      model: groq(GROQ_MODELS.LLAMA_3_8B),
-      messages: [
+    const content = await createGroqCompletion(
+      [
         { role: "system", content: systemMessage },
         {
           role: "user",
           content: `What can I substitute for ${ingredient}? Give me 3-4 good alternatives with exact ratios and any cooking adjustments needed.`,
         },
       ],
-    })
+      { temperature: 0.5, maxTokens: 900 },
+    )
 
-    return result.toTextStreamResponse()
+    return new Response(content, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    })
   } catch (error) {
     console.error("Substitution error:", error)
     return Response.json({ error: "Failed to get substitutions" }, { status: 500 })

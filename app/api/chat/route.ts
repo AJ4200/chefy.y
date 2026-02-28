@@ -1,5 +1,4 @@
-import { streamText } from "ai"
-import { groq, GROQ_MODELS } from "@/lib/groq"
+import { createGroqCompletion } from "@/lib/groq-client"
 
 export async function POST(req: Request) {
   try {
@@ -18,12 +17,14 @@ export async function POST(req: Request) {
       : `You are Chefy.Y's cooking assistant. You provide helpful, friendly advice about cooking.
          Be concise, practical, and encouraging. Focus on answering cooking questions clearly.`
 
-    const result = streamText({
-      model: groq(GROQ_MODELS.LLAMA_3_8B),
-      messages: [{ role: "system", content: systemMessage }, ...messages],
-    })
+    const content = await createGroqCompletion(
+      [{ role: "system", content: systemMessage }, ...messages],
+      { temperature: 0.6, maxTokens: 1400 },
+    )
 
-    return result.toTextStreamResponse()
+    return new Response(content, {
+      headers: { "Content-Type": "text/plain; charset=utf-8" },
+    })
   } catch (error) {
     console.error("Chat error:", error)
     return Response.json({ error: "Failed to process chat" }, { status: 500 })

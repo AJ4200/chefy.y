@@ -8,7 +8,7 @@ import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { CookieConsent } from "@/components/cookie-consent"
 import { ChatInterface } from "@/components/chat-interface"
-import { MessageCircle } from "lucide-react"
+import { ChefHat, Sparkles } from "lucide-react"
 
 export default function HomePage() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -19,11 +19,11 @@ export default function HomePage() {
 
       <main className="flex-1 px-4 pb-10 pt-6">
         <div className="container mx-auto max-w-7xl space-y-8">
-          <section className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/80 shadow-2xl dark:border-white/10 dark:bg-white/10">
+          <section className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/80 shadow-2xl transition-all duration-500 dark:border-white/10 dark:bg-white/10">
             <div className="absolute -top-24 right-10 h-64 w-64 rounded-full bg-gradient-to-br from-pink-400/40 to-purple-500/40 blur-3xl dark:from-pink-500/20 dark:to-purple-500/20" />
             <div className="absolute -bottom-32 left-10 h-64 w-64 rounded-full bg-gradient-to-tr from-amber-300/50 to-indigo-400/40 blur-3xl dark:from-amber-400/15 dark:to-indigo-400/20" />
             <div className="relative grid gap-8 p-8 md:grid-cols-[1.2fr_0.8fr] md:p-12">
-              <div>
+              <div className="animate-rise">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-foreground/60">
                   AI Kitchen Companion
                 </p>
@@ -37,15 +37,19 @@ export default function HomePage() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
+                    className="bg-gradient-to-r from-pink-500 to-purple-500 text-white transition-all duration-300 hover:-translate-y-0.5 hover:from-pink-600 hover:to-purple-600"
                   >
-                    <Link href="/recipes">Let&apos;s cook</Link>
+                    <Link href="/recipes">
+                      <ChefHat className="w-4 h-4" />
+                      Let&apos;s cook
+                    </Link>
                   </Button>
                   <Button
                     onClick={() => setIsChatOpen(true)}
                     variant="outline"
-                    className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+                    className="border-black/10 text-foreground transition-all duration-300 hover:-translate-y-0.5 hover:bg-black/5 dark:border-white/30 dark:hover:bg-white/10"
                   >
+                    <Sparkles className="w-4 h-4" />
                     Ask Chefy
                   </Button>
                 </div>
@@ -88,15 +92,6 @@ export default function HomePage() {
           </div>
         </SheetContent>
       </Sheet>
-
-      <Button
-        onClick={() => setIsChatOpen(true)}
-        size="icon"
-        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-xl hover:from-pink-600 hover:to-purple-600"
-        aria-label="Open cooking assistant"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </Button>
 
       <Footer />
       <CookieConsent />

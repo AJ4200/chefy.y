@@ -1,6 +1,5 @@
-import { generateObject } from "ai"
 import { z } from "zod"
-import { groq, GROQ_MODELS } from "@/lib/groq"
+import { createGroqCompletion } from "@/lib/groq-client"
 
 // Simplified schema for better Groq compatibility
 const recipeSchema = z.object({
@@ -27,9 +26,12 @@ const recipeSchema = z.object({
 })
 
 export async function POST(req: Request) {
-  try {
-    const { ingredients, cookingMethods, cookingTime } = await req.json()
+  const body = await req.json()
+  const ingredients = Array.isArray(body?.ingredients) ? body.ingredients : []
+  const cookingMethods = Array.isArray(body?.cookingMethods) ? body.cookingMethods : []
+  const cookingTime = typeof body?.cookingTime === "number" ? body.cookingTime : Number(body?.cookingTime)
 
+  try {
     if (!ingredients || ingredients.length === 0) {
       return Response.json({ error: "Ingredients are required" }, { status: 400 })
     }
@@ -52,55 +54,80 @@ For each recipe, provide:
 - tips: array of 2-3 helpful tips
 - presentation: how to serve and present the dish
 
-Make recipes practical and delicious.`
+Make recipes practical and delicious.
+Return only valid JSON with a top-level "recipes" array.`
 
-    const result = await generateObject({
-      model: groq(GROQ_MODELS.LLAMA_3_8B), // Using 8B model for better JSON generation
-      schema: recipeSchema,
-      prompt,
-      mode: "json", // Explicitly use JSON mode
-    })
+    const text = await createGroqCompletion(
+      [
+        {
+          role: "system",
+          content: "You are a recipe generation assistant. Respond with strict JSON only.",
+        },
+        { role: "user", content: prompt },
+      ],
+      { jsonMode: true, temperature: 0.5, maxTokens: 2200 },
+    )
 
-    return Response.json(result.object)
+    const parsed = safeParseJson(text)
+    const validated = recipeSchema.safeParse(parsed)
+
+    if (!validated.success) {
+      throw new Error("Model returned an invalid recipe payload")
+    }
+
+    return Response.json(validated.data)
   } catch (error) {
     console.error("Error generating recipes:", error)
 
-    // Fallback to text generation if structured generation fails
     try {
-      const { generateText } = await import("ai")
-      const { ingredients, cookingMethods, cookingTime } = await req.json()
-
       const fallbackPrompt = `Create 3 simple recipes using: ${ingredients.join(", ")}.
       
-      Format as valid JSON with this structure:
-      {
-        "recipes": [
-          {
-            "name": "Recipe Name",
-            "description": "Brief description",
-            "cookingTime": 30,
-            "servings": 4,
-            "difficulty": "Easy",
-            "ingredients": [{"name": "ingredient", "amount": "1 cup"}],
-            "instructions": ["Step 1", "Step 2"],
-            "cookingMethod": "baking",
-            "tips": ["Tip 1", "Tip 2"],
-            "presentation": "How to serve"
-          }
-        ]
-      }`
+Format as valid JSON with this structure:
+{
+  "recipes": [
+    {
+      "name": "Recipe Name",
+      "description": "Brief description",
+      "cookingTime": 30,
+      "servings": 4,
+      "difficulty": "Easy",
+      "ingredients": [{"name": "ingredient", "amount": "1 cup"}],
+      "instructions": ["Step 1", "Step 2"],
+      "cookingMethod": "baking",
+      "tips": ["Tip 1", "Tip 2"],
+      "presentation": "How to serve"
+    }
+  ]
+}`
 
-      const textResult = await generateText({
-        model: groq(GROQ_MODELS.LLAMA_3_8B),
-        prompt: fallbackPrompt,
-      })
+      const fallbackText = await createGroqCompletion(
+        [
+          { role: "system", content: "Return strict JSON only. Do not add markdown." },
+          { role: "user", content: fallbackPrompt },
+        ],
+        { jsonMode: true, temperature: 0.4, maxTokens: 1800 },
+      )
 
-      // Try to parse the text result as JSON
-      const parsedResult = JSON.parse(textResult.text)
-      return Response.json(parsedResult)
+      const parsedFallback = safeParseJson(fallbackText)
+      const validatedFallback = recipeSchema.safeParse(parsedFallback)
+      if (!validatedFallback.success) {
+        throw new Error("Fallback payload did not match schema")
+      }
+
+      return Response.json(validatedFallback.data)
     } catch (fallbackError) {
       console.error("Fallback also failed:", fallbackError)
       return Response.json({ error: "Failed to generate recipes. Please try again." }, { status: 500 })
     }
+  }
+}
+
+function safeParseJson(text: string) {
+  try {
+    return JSON.parse(text)
+  } catch {
+    const codeFenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/i)
+    const candidate = codeFenceMatch ? codeFenceMatch[1] : text
+    return JSON.parse(candidate)
   }
 }

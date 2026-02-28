@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
   ChefHat,
   Clock,
@@ -19,14 +18,13 @@ import {
   X,
   Plus,
   Zap,
-  MessageCircle,
   ArrowRightLeft,
   Heart,
+  Timer,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LoadingIndicator } from "@/components/loading-indicator"
 import { ErrorFallback } from "@/components/error-fallback"
-import { ChatInterface } from "@/components/chat-interface"
 import { IngredientSubstitution } from "@/components/ingredient-substitution"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
@@ -38,20 +36,36 @@ export default function RecipesPage() {
   const [ingredients, setIngredients] = useState<string[]>([])
   const [currentIngredient, setCurrentIngredient] = useState("")
   const [cookingMethods, setCookingMethods] = useState<string[]>([])
+  const [customMethods, setCustomMethods] = useState<string[]>([])
   const [currentMethod, setCurrentMethod] = useState("")
   const [cookingTime, setCookingTime] = useState("")
+  const [isCustomMethodOpen, setIsCustomMethodOpen] = useState(false)
+  const [isCustomTimeOpen, setIsCustomTimeOpen] = useState(false)
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showSubstitution, setShowSubstitution] = useState(false)
   const [favoriteRecipes, setFavoriteRecipes] = useState<Recipe[]>([])
-  const [isChatOpen, setIsChatOpen] = useState(false)
-  const [chatRecipe, setChatRecipe] = useState<Recipe | null>(null)
 
   useEffect(() => {
     setFavoriteRecipes(getSavedRecipes())
   }, [])
+
+  const methodTemplates = [
+    { label: "Stir-fry", icon: Zap },
+    { label: "Bake", icon: ChefHat },
+    { label: "Boil", icon: Utensils },
+    { label: "Steam", icon: Sparkles },
+    { label: "Grill", icon: Clock },
+  ]
+
+  const timeTemplates = [
+    { value: "15", label: "15 min", icon: Timer },
+    { value: "30", label: "30 min", icon: Clock },
+    { value: "45", label: "45 min", icon: Clock },
+    { value: "60", label: "60 min", icon: Clock },
+  ]
 
   const addIngredient = () => {
     if (currentIngredient.trim() && !ingredients.includes(currentIngredient.trim())) {
@@ -66,13 +80,30 @@ export default function RecipesPage() {
 
   const addCookingMethod = () => {
     if (currentMethod.trim() && !cookingMethods.includes(currentMethod.trim())) {
-      setCookingMethods([...cookingMethods, currentMethod.trim()])
+      const method = currentMethod.trim()
+      setCookingMethods([...cookingMethods, method])
+      if (!customMethods.includes(method)) {
+        setCustomMethods([...customMethods, method])
+      }
       setCurrentMethod("")
     }
   }
 
   const removeCookingMethod = (method: string) => {
     setCookingMethods(cookingMethods.filter((m) => m !== method))
+  }
+
+  const toggleCookingMethod = (method: string) => {
+    if (cookingMethods.includes(method)) {
+      removeCookingMethod(method)
+      return
+    }
+    setCookingMethods([...cookingMethods, method])
+  }
+
+  const toggleCookingTimeTemplate = (time: string) => {
+    setIsCustomTimeOpen(false)
+    setCookingTime(cookingTime === time ? "" : time)
   }
 
   const generateRecipes = async () => {
@@ -151,11 +182,6 @@ export default function RecipesPage() {
     }
   }
 
-  const openChat = (recipe: Recipe | null) => {
-    setChatRecipe(recipe)
-    setIsChatOpen(true)
-  }
-
   const renderRightPanel = () => {
     if (showSubstitution) {
       return <IngredientSubstitution recipe={selectedRecipe} onClose={() => setShowSubstitution(false)} />
@@ -190,15 +216,6 @@ export default function RecipesPage() {
                 >
                   <ArrowRightLeft className="w-4 h-4 mr-2" />
                   Substitute
-                </Button>
-                <Button
-                  onClick={() => openChat(selectedRecipe)}
-                  variant="outline"
-                  size="sm"
-                  className="text-foreground hover:bg-black/5 dark:hover:bg-white/10 border-black/10 dark:border-white/30"
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Ask Chefy
                 </Button>
                 <Button
                   onClick={() => setSelectedRecipe(null)}
@@ -281,7 +298,7 @@ export default function RecipesPage() {
           <Card
             key={recipe.id || index}
             className={cn(
-              "glass-panel cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-black/5 dark:hover:bg-white/20",
+              "glass-panel animate-rise cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-black/5 dark:hover:bg-white/20",
               "transform hover:shadow-2xl",
             )}
             onClick={() => setSelectedRecipe(recipe)}
@@ -319,7 +336,7 @@ export default function RecipesPage() {
           </Card>
         ))}
         {recipes.length === 0 && !isGenerating && !error && (
-          <Card className="glass-panel">
+          <Card className="glass-panel animate-rise">
             <CardContent className="text-center py-12">
               <ChefHat className="w-16 h-16 mx-auto text-foreground/50 mb-4" />
               <p className="text-foreground/70 text-lg">Add some ingredients and let&apos;s cook up something amazing!</p>
@@ -336,7 +353,7 @@ export default function RecipesPage() {
           />
         )}
         {recipes.length === 0 && isGenerating && (
-          <Card className="glass-panel">
+          <Card className="glass-panel animate-rise">
             <CardContent className="text-center py-12">
               <div className="animate-pulse">
                 <Zap className="w-16 h-16 mx-auto text-green-400 mb-4" />
@@ -398,45 +415,115 @@ export default function RecipesPage() {
 
                   <div>
                     <Label className="text-foreground font-medium">Preferred Cooking Methods</Label>
-                    <div className="flex gap-2 mt-2">
-                      <Input
-                        placeholder="e.g., baking, frying..."
-                        value={currentMethod}
-                        onChange={(e) => setCurrentMethod(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && addCookingMethod()}
-                        className="glass-input"
-                      />
+                    <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                      {methodTemplates.map(({ label, icon: Icon }) => (
+                        <Button
+                          key={label}
+                          type="button"
+                          variant="ghost"
+                          onClick={() => toggleCookingMethod(label)}
+                          className={cn(
+                            "h-auto min-h-20 flex-col gap-2 rounded-xl border p-3 text-center transition-all duration-300",
+                            cookingMethods.includes(label)
+                              ? "border-transparent bg-gradient-to-br from-purple-500 to-indigo-500 text-white shadow-lg"
+                              : "border-black/10 bg-white/60 text-foreground dark:border-white/30 dark:bg-white/5 hover:-translate-y-0.5 hover:bg-black/5 dark:hover:bg-white/10",
+                          )}
+                        >
+                          <Icon className="h-7 w-7" />
+                          <span className="text-[11px] font-semibold tracking-wide">{label}</span>
+                        </Button>
+                      ))}
                       <Button
-                        onClick={addCookingMethod}
-                        size="icon"
-                        className="bg-purple-500 hover:bg-purple-600 text-white"
+                        type="button"
+                        variant="ghost"
+                        onClick={() => setIsCustomMethodOpen((prev) => !prev)}
+                        className={cn(
+                          "h-auto min-h-20 flex-col gap-2 rounded-xl border border-dashed border-black/15 bg-white/60 p-3 text-center transition-all duration-300 dark:border-white/30 dark:bg-white/5 hover:-translate-y-0.5 hover:bg-black/5 dark:hover:bg-white/10",
+                          isCustomMethodOpen && "border-pink-500/50 bg-pink-500/10",
+                        )}
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="h-7 w-7" />
+                        <span className="text-[11px] font-semibold tracking-wide">Custom</span>
                       </Button>
                     </div>
+                    {isCustomMethodOpen && (
+                      <div className="mt-3 flex gap-2 animate-rise">
+                        <Input
+                          placeholder="Add custom method..."
+                          value={currentMethod}
+                          onChange={(e) => setCurrentMethod(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && addCookingMethod()}
+                          className="glass-input"
+                        />
+                        <Button onClick={addCookingMethod} size="icon" className="bg-purple-500 hover:bg-purple-600 text-white">
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {cookingMethods.map((method) => (
+                      {customMethods.map((method) => (
                         <Badge
                           key={method}
                           variant="secondary"
-                          className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 cursor-pointer"
-                          onClick={() => removeCookingMethod(method)}
+                          className={cn(
+                            "cursor-pointer transition-all duration-300",
+                            cookingMethods.includes(method)
+                              ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600"
+                              : "bg-black/10 text-foreground/80 dark:bg-white/20",
+                          )}
+                          onClick={() => toggleCookingMethod(method)}
                         >
-                          {method} <X className="w-3 h-3 ml-1" />
+                          {method} {cookingMethods.includes(method) ? <X className="w-3 h-3 ml-1" /> : null}
                         </Badge>
                       ))}
                     </div>
                   </div>
 
                   <div>
-                    <Label className="text-foreground font-medium">Cooking Time (minutes, optional)</Label>
-                    <Input
-                      type="number"
-                      placeholder="30"
-                      value={cookingTime}
-                      onChange={(e) => setCookingTime(e.target.value)}
-                      className="glass-input mt-2"
-                    />
+                    <Label className="text-foreground font-medium">Cooking Time</Label>
+                    <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+                      {timeTemplates.map(({ value, label, icon: Icon }) => (
+                        <Button
+                          key={value}
+                          type="button"
+                          variant="ghost"
+                          onClick={() => toggleCookingTimeTemplate(value)}
+                          className={cn(
+                            "h-auto min-h-20 flex-col gap-2 rounded-xl border p-3 text-center transition-all duration-300",
+                            cookingTime === value
+                              ? "border-transparent bg-gradient-to-br from-pink-500 to-orange-500 text-white shadow-lg"
+                              : "border-black/10 bg-white/60 text-foreground dark:border-white/30 dark:bg-white/5 hover:-translate-y-0.5 hover:bg-black/5 dark:hover:bg-white/10",
+                          )}
+                        >
+                          <Icon className="h-7 w-7" />
+                          <span className="text-[11px] font-semibold tracking-wide">{label}</span>
+                        </Button>
+                      ))}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                          setIsCustomTimeOpen((prev) => !prev)
+                          if (!isCustomTimeOpen) setCookingTime("")
+                        }}
+                        className={cn(
+                          "h-auto min-h-20 flex-col gap-2 rounded-xl border border-dashed border-black/15 bg-white/60 p-3 text-center transition-all duration-300 dark:border-white/30 dark:bg-white/5 hover:-translate-y-0.5 hover:bg-black/5 dark:hover:bg-white/10",
+                          isCustomTimeOpen && "border-pink-500/50 bg-pink-500/10",
+                        )}
+                      >
+                        <Plus className="h-7 w-7" />
+                        <span className="text-[11px] font-semibold tracking-wide">Custom</span>
+                      </Button>
+                    </div>
+                    {isCustomTimeOpen && (
+                      <Input
+                        type="number"
+                        placeholder="Custom minutes..."
+                        value={cookingTime}
+                        onChange={(e) => setCookingTime(e.target.value)}
+                        className="glass-input mt-3 animate-rise"
+                      />
+                    )}
                   </div>
 
                   <Button
@@ -452,7 +539,7 @@ export default function RecipesPage() {
                     ) : (
                       <>
                         <Zap className="w-4 h-4 mr-2" />
-                        Generate with Groq
+                        Generate and Cook
                       </>
                     )}
                   </Button>
@@ -480,7 +567,7 @@ export default function RecipesPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2">
                     <Button
                       onClick={() => setShowSubstitution(true)}
                       variant="outline"
@@ -488,14 +575,6 @@ export default function RecipesPage() {
                     >
                       <ArrowRightLeft className="w-4 h-4 mr-2" />
                       Substitutions
-                    </Button>
-                    <Button
-                      onClick={() => openChat(null)}
-                      variant="outline"
-                      className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Ask Chefy
                     </Button>
                   </div>
                 </CardContent>
@@ -506,29 +585,6 @@ export default function RecipesPage() {
           </div>
         </div>
       </main>
-
-      <Sheet open={isChatOpen} onOpenChange={setIsChatOpen}>
-        <SheetContent side="bottom" className="glass-panel-strong max-h-[90vh] overflow-y-auto rounded-t-3xl">
-          <SheetHeader className="text-left">
-            <SheetTitle className="text-2xl text-foreground">Cooking Assistant</SheetTitle>
-            <SheetDescription className="text-foreground/70">
-              Ask Chefy anything about ingredients, techniques, or recipes.
-            </SheetDescription>
-          </SheetHeader>
-          <div className="mt-6">
-            <ChatInterface recipe={chatRecipe} onClose={() => setIsChatOpen(false)} />
-          </div>
-        </SheetContent>
-      </Sheet>
-
-      <Button
-        onClick={() => openChat(null)}
-        size="icon"
-        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-xl hover:from-pink-600 hover:to-purple-600"
-        aria-label="Open cooking assistant"
-      >
-        <MessageCircle className="h-6 w-6" />
-      </Button>
 
       <Footer />
       <CookieConsent />
