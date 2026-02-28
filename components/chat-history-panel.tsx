@@ -21,7 +21,7 @@ import {
 
 interface ChatHistoryPanelProps {
   onSelectHistory: (history: ChatHistory) => void
-  onClose: () => void
+  onClose?: () => void
 }
 
 export function ChatHistoryPanel({ onSelectHistory, onClose }: ChatHistoryPanelProps) {
@@ -86,14 +86,16 @@ export function ChatHistoryPanel({ onSelectHistory, onClose }: ChatHistoryPanelP
                 </AlertDialogContent>
               </AlertDialog>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
-            >
-              <X className="w-5 h-5" />
-            </Button>
+            {onClose && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
+                className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            )}
           </div>
         </div>
       </CardHeader>

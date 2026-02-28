@@ -4,13 +4,14 @@ import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { Monitor, Moon, Sun } from "lucide-react"
 
 type ThemeOption = "light" | "dark" | "system"
 
-const options: { value: ThemeOption; label: string }[] = [
-  { value: "light", label: "Light" },
-  { value: "dark", label: "Dark" },
-  { value: "system", label: "System" },
+const options: { value: ThemeOption; label: string; icon: React.ReactNode }[] = [
+  { value: "light", label: "Light", icon: <Sun className="h-4 w-4" /> },
+  { value: "dark", label: "Dark", icon: <Moon className="h-4 w-4" /> },
+  { value: "system", label: "System", icon: <Monitor className="h-4 w-4" /> },
 ]
 
 export function ThemeToggle({ className }: { className?: string }) {
@@ -42,13 +43,14 @@ export function ThemeToggle({ className }: { className?: string }) {
             size="sm"
             onClick={() => setTheme(option.value)}
             className={cn(
-              "h-8 rounded-full px-3 text-xs font-semibold transition",
+              "h-8 w-8 rounded-full p-0 text-xs font-semibold transition",
               "text-foreground/70 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10",
               isActive && "bg-black/10 text-foreground dark:bg-white/20",
             )}
             aria-pressed={isActive}
+            aria-label={option.label}
           >
-            {option.label}
+            {option.icon}
           </Button>
         )
       })}

@@ -7,44 +7,33 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 import { ThemeToggle } from "@/components/theme-toggle"
 
-interface HeaderProps {
-  onShowHistory?: () => void
-  onShowFavorites?: () => void
-}
-
-export function Header({ onShowHistory, onShowFavorites }: HeaderProps) {
+export function Header() {
   const [isOpen, setIsOpen] = useState(false)
 
   const NavLinks = () => (
     <>
-      {onShowHistory && (
+      <Link href="/history">
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => {
-            onShowHistory()
-            setIsOpen(false)
-          }}
+          onClick={() => setIsOpen(false)}
           className="text-foreground/80 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10"
         >
           <History className="w-4 h-4 mr-2" />
           Chat History
         </Button>
-      )}
-      {onShowFavorites && (
+      </Link>
+      <Link href="/saved">
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => {
-            onShowFavorites()
-            setIsOpen(false)
-          }}
+          onClick={() => setIsOpen(false)}
           className="text-foreground/80 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10"
         >
           <Heart className="w-4 h-4 mr-2" />
           Saved Recipes
         </Button>
-      )}
+      </Link>
     </>
   )
 
