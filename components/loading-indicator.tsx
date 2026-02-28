@@ -23,8 +23,8 @@ export function LoadingIndicator() {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <div className="text-lg font-medium text-white mb-2">Generating with Groq{dots}</div>
-      <div className="text-sm text-white/70">{elapsed.toFixed(1)}s elapsed</div>
+      <div className="text-lg font-medium text-foreground mb-2">Generating with Groq{dots}</div>
+      <div className="text-sm text-foreground/70">{elapsed.toFixed(1)}s elapsed</div>
     </div>
   )
 }

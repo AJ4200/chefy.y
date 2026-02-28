@@ -129,10 +129,10 @@ export function ChatInterface({ recipe, onClose, existingHistory }: ChatInterfac
   }
 
   return (
-    <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl flex flex-col h-[600px]">
+    <Card className="glass-panel flex flex-col h-[600px]">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <ChefHat className="h-5 w-5" />
             Cooking Assistant
           </CardTitle>
@@ -141,18 +141,23 @@ export function ChatInterface({ recipe, onClose, existingHistory }: ChatInterfac
               variant="ghost"
               size="icon"
               onClick={() => setShowImageUpload(true)}
-              className="text-white hover:bg-white/10"
+              className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
               title="Upload food image"
             >
               <Camera className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/10">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+            >
               <X className="h-5 w-5" />
             </Button>
           </div>
         </div>
       </CardHeader>
-      <Separator className="bg-white/20" />
+      <Separator className="bg-black/10 dark:bg-white/20" />
       <CardContent className="flex-1 overflow-y-auto p-4 flex flex-col">
         <div className="flex-1 overflow-y-auto space-y-2 pr-2">
           {messages.map((message) => (

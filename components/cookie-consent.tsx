@@ -59,7 +59,7 @@ export function CookieConsent() {
   return (
     <>
       <div className="fixed bottom-0 left-0 right-0 z-50 p-4 cookie-banner">
-        <Card className="container mx-auto max-w-4xl backdrop-blur-xl bg-purple-900/90 border-white/20 shadow-2xl">
+        <Card className="container mx-auto max-w-4xl backdrop-blur-xl bg-white/90 dark:bg-slate-950/90 border-black/10 dark:border-white/20 shadow-2xl">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
               <div className="flex items-center gap-3">
@@ -67,8 +67,8 @@ export function CookieConsent() {
                   <Cookie className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-white font-semibold">Cookie Preferences</h3>
-                  <p className="text-white/70 text-sm mt-1">
+                  <h3 className="text-foreground font-semibold">Cookie Preferences</h3>
+                  <p className="text-foreground/70 text-sm mt-1">
                     We use cookies to enhance your experience, save your recipes, and remember your preferences.
                   </p>
                 </div>
@@ -78,7 +78,7 @@ export function CookieConsent() {
                   variant="outline"
                   size="sm"
                   onClick={() => setShowSettings(true)}
-                  className="border-white/30 text-white hover:bg-white/10"
+                  className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
                 >
                   <Settings className="w-4 h-4 mr-2" />
                   Customize
@@ -87,14 +87,14 @@ export function CookieConsent() {
                   variant="outline"
                   size="sm"
                   onClick={rejectNonEssential}
-                  className="border-white/30 text-white hover:bg-white/10 bg-transparent"
+                  className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10 bg-transparent"
                 >
                   Essential Only
                 </Button>
                 <Button
                   size="sm"
                   onClick={acceptAll}
-                  className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                  className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
                 >
                   <Check className="w-4 h-4 mr-2" />
                   Accept All
@@ -106,55 +106,55 @@ export function CookieConsent() {
       </div>
 
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className="backdrop-blur-xl bg-purple-900/95 border-white/20 text-white">
-          <DialogHeader>
-            <DialogTitle>Cookie Settings</DialogTitle>
-            <DialogDescription className="text-white/70">Manage your cookie preferences below.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-white font-medium">Necessary Cookies</Label>
-                <p className="text-white/60 text-sm">Required for basic site functionality.</p>
-              </div>
-              <Switch checked={true} disabled className="opacity-50" />
+      <DialogContent className="backdrop-blur-xl bg-white/95 dark:bg-slate-950/95 border-black/10 dark:border-white/20 text-foreground">
+        <DialogHeader>
+          <DialogTitle>Cookie Settings</DialogTitle>
+          <DialogDescription className="text-foreground/70">Manage your cookie preferences below.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label className="text-foreground font-medium">Necessary Cookies</Label>
+              <p className="text-foreground/60 text-sm">Required for basic site functionality.</p>
             </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-white font-medium">Preference Cookies</Label>
-                <p className="text-white/60 text-sm">Save your recipes and chat history.</p>
-              </div>
-              <Switch
-                checked={consent.preferences}
-                onCheckedChange={(checked) => setConsent({ ...consent, preferences: checked })}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Label className="text-white font-medium">Analytics Cookies</Label>
-                <p className="text-white/60 text-sm">Help us improve the app experience.</p>
-              </div>
-              <Switch
-                checked={consent.analytics}
-                onCheckedChange={(checked) => setConsent({ ...consent, analytics: checked })}
-              />
-            </div>
+            <Switch checked={true} disabled className="opacity-50" />
           </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setShowSettings(false)}
-              className="border-white/30 text-white hover:bg-white/10"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={acceptSelected}
-              className="bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
-            >
-              Save Preferences
-            </Button>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label className="text-foreground font-medium">Preference Cookies</Label>
+              <p className="text-foreground/60 text-sm">Save your recipes and chat history.</p>
+            </div>
+            <Switch
+              checked={consent.preferences}
+              onCheckedChange={(checked) => setConsent({ ...consent, preferences: checked })}
+            />
           </div>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <Label className="text-foreground font-medium">Analytics Cookies</Label>
+              <p className="text-foreground/60 text-sm">Help us improve the app experience.</p>
+            </div>
+            <Switch
+              checked={consent.analytics}
+              onCheckedChange={(checked) => setConsent({ ...consent, analytics: checked })}
+            />
+          </div>
+        </div>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setShowSettings(false)}
+            className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={acceptSelected}
+            className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
+          >
+            Save Preferences
+          </Button>
+        </div>
         </DialogContent>
       </Dialog>
     </>

@@ -77,14 +77,19 @@ export function ImageUpload({ onClose, onSendWithImage }: ImageUploadProps) {
   ]
 
   return (
-    <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl">
-      <CardHeader className="pb-3 border-b border-white/20">
+    <Card className="glass-panel">
+      <CardHeader className="pb-3 border-b border-black/10 dark:border-white/20">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <Camera className="w-5 h-5" />
             Upload Food Image
           </CardTitle>
-          <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/10">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+          >
             <X className="w-5 h-5" />
           </Button>
         </div>
@@ -122,7 +127,7 @@ export function ImageUpload({ onClose, onSendWithImage }: ImageUploadProps) {
                   e.stopPropagation()
                   setImage(null)
                 }}
-                className="border-white/30 text-white hover:bg-white/10"
+                className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
               >
                 <X className="w-4 h-4 mr-2" />
                 Remove Image
@@ -130,12 +135,12 @@ export function ImageUpload({ onClose, onSendWithImage }: ImageUploadProps) {
             </div>
           ) : (
             <div className="space-y-3">
-              <div className="mx-auto w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
-                <ImageIcon className="w-8 h-8 text-white/50" />
+              <div className="mx-auto w-16 h-16 rounded-full glass-surface flex items-center justify-center">
+                <ImageIcon className="w-8 h-8 text-foreground/50" />
               </div>
               <div>
-                <p className="text-white font-medium">Drop an image here or click to upload</p>
-                <p className="text-white/50 text-sm mt-1">PNG, JPG up to 5MB</p>
+                <p className="text-foreground font-medium">Drop an image here or click to upload</p>
+                <p className="text-foreground/50 text-sm mt-1">PNG, JPG up to 5MB</p>
               </div>
             </div>
           )}
@@ -143,12 +148,12 @@ export function ImageUpload({ onClose, onSendWithImage }: ImageUploadProps) {
 
         {/* Question Input */}
         <div>
-          <p className="text-white font-medium mb-2">Ask about this image</p>
+          <p className="text-foreground font-medium mb-2">Ask about this image</p>
           <Textarea
             placeholder="What would you like to know about this food?"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="min-h-[80px] backdrop-blur-sm bg-white/20 border-white/30 text-white placeholder:text-white/50"
+            className="min-h-[80px] glass-input"
           />
         </div>
 
@@ -160,7 +165,7 @@ export function ImageUpload({ onClose, onSendWithImage }: ImageUploadProps) {
               variant="outline"
               size="sm"
               onClick={() => setQuestion(q)}
-              className="border-white/30 text-white hover:bg-white/10 text-xs"
+              className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10 text-xs"
             >
               {q}
             </Button>
@@ -171,7 +176,7 @@ export function ImageUpload({ onClose, onSendWithImage }: ImageUploadProps) {
         <Button
           onClick={handleSubmit}
           disabled={!image || !question.trim() || isLoading}
-          className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+          className="w-full bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
         >
           {isLoading ? (
             <>

@@ -35,13 +35,13 @@ export function ChatInput({ onSend, isLoading }: ChatInputProps) {
             handleSubmit(e)
           }
         }}
-        className="min-h-[60px] resize-none bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder:text-white/50"
+        className="min-h-[60px] resize-none glass-input"
         disabled={isLoading}
       />
       <Button
         type="submit"
         size="icon"
-        className="h-[60px] w-[60px] bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+        className="h-[60px] w-[60px] bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
         disabled={isLoading || !input.trim()}
       >
         <SendHorizonal className="h-5 w-5" />

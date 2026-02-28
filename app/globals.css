@@ -65,7 +65,28 @@
   }
   body {
     @apply bg-background text-foreground;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark body {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@layer components {
+  .glass-panel {
+    @apply border border-black/10 bg-white/75 text-foreground shadow-xl backdrop-blur-lg dark:border-white/20 dark:bg-white/10;
+  }
+
+  .glass-panel-strong {
+    @apply border border-black/10 bg-white/85 text-foreground shadow-2xl backdrop-blur-xl dark:border-white/20 dark:bg-white/15;
+  }
+
+  .glass-input {
+    @apply backdrop-blur-sm bg-white/80 border-black/10 text-foreground placeholder:text-foreground/50 dark:bg-white/10 dark:border-white/20;
+  }
+
+  .glass-surface {
+    @apply bg-black/5 dark:bg-white/10 backdrop-blur-sm;
   }
 }
 
@@ -145,8 +166,12 @@
 
 /* Image upload styles */
 .image-upload-zone {
-  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border: 2px dashed rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
+}
+
+.dark .image-upload-zone {
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .image-upload-zone:hover,

@@ -30,7 +30,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           "rounded-lg px-4 py-2 max-w-[80%]",
           message.role === "user"
             ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white"
-            : "bg-white/20 backdrop-blur-sm text-white",
+            : "glass-surface text-foreground",
         )}
       >
         {message.imageUrl && (

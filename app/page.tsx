@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
   ChefHat,
   Clock,
@@ -51,6 +52,7 @@ export default function ChefyY() {
   const [showHistory, setShowHistory] = useState(false)
   const [showSubstitution, setShowSubstitution] = useState(false)
   const [showFavorites, setShowFavorites] = useState(false)
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false)
   const [selectedChatHistory, setSelectedChatHistory] = useState<ChatHistory | null>(null)
   const [favoriteRecipes, setFavoriteRecipes] = useState<Recipe[]>([])
 
@@ -164,6 +166,16 @@ export default function ChefyY() {
     setShowChat(true)
   }
 
+  const openChatPanel = () => {
+    setShowChat(true)
+    setShowHistory(false)
+    setShowSubstitution(false)
+    setShowFavorites(false)
+    setSelectedChatHistory(null)
+    setSelectedRecipe(null)
+    setIsGeneratorOpen(false)
+  }
+
   // Determine what to show in the right panel
   const renderRightPanel = () => {
     if (showHistory) {
@@ -189,10 +201,10 @@ export default function ChefyY() {
 
     if (showFavorites) {
       return (
-        <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl">
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-white flex items-center gap-2">
+              <CardTitle className="text-foreground flex items-center gap-2">
                 <Heart className="w-5 h-5 text-pink-400 fill-pink-400" />
                 Saved Recipes
               </CardTitle>
@@ -200,7 +212,7 @@ export default function ChefyY() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setShowFavorites(false)}
-                className="text-white hover:bg-white/10"
+                className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
               >
                 <X className="w-5 h-5" />
               </Button>
@@ -209,15 +221,15 @@ export default function ChefyY() {
           <CardContent className="space-y-3">
             {favoriteRecipes.length === 0 ? (
               <div className="text-center py-12">
-                <Heart className="w-12 h-12 mx-auto text-white/30 mb-3" />
-                <p className="text-white/50">No saved recipes yet</p>
-                <p className="text-white/40 text-sm mt-1">Click the heart icon to save recipes</p>
+                <Heart className="w-12 h-12 mx-auto text-foreground/30 mb-3" />
+                <p className="text-foreground/50">No saved recipes yet</p>
+                <p className="text-foreground/40 text-sm mt-1">Click the heart icon to save recipes</p>
               </div>
             ) : (
               favoriteRecipes.map((recipe) => (
                 <div
                   key={recipe.id}
-                  className="p-4 rounded-lg bg-white/10 hover:bg-white/20 cursor-pointer transition-all"
+                  className="p-4 rounded-lg glass-surface hover:bg-black/10 dark:hover:bg-white/20 cursor-pointer transition-all"
                   onClick={() => {
                     setSelectedRecipe(recipe)
                     setShowFavorites(false)
@@ -225,8 +237,8 @@ export default function ChefyY() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="text-white font-medium">{recipe.name}</h4>
-                      <p className="text-white/60 text-sm mt-1">{recipe.description?.slice(0, 80)}...</p>
+                      <h4 className="text-foreground font-medium">{recipe.name}</h4>
+                      <p className="text-foreground/60 text-sm mt-1">{recipe.description?.slice(0, 80)}...</p>
                       <div className="flex gap-2 mt-2">
                         <Badge className="bg-pink-500/80 text-white text-xs">
                           <Clock className="w-3 h-3 mr-1" />
@@ -242,7 +254,7 @@ export default function ChefyY() {
                         e.stopPropagation()
                         toggleFavorite(recipe)
                       }}
-                      className="text-pink-400 hover:bg-white/10"
+                      className="text-pink-400 hover:bg-black/5 dark:hover:bg-white/10"
                     >
                       <HeartOff className="w-5 h-5" />
                     </Button>
@@ -257,12 +269,12 @@ export default function ChefyY() {
 
     if (selectedRecipe) {
       return (
-        <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl">
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-2xl text-white mb-2">{selectedRecipe.name}</CardTitle>
-                <CardDescription className="text-white/80 text-base">{selectedRecipe.description}</CardDescription>
+                <CardTitle className="text-2xl text-foreground mb-2">{selectedRecipe.name}</CardTitle>
+                <CardDescription className="text-foreground/80 text-base">{selectedRecipe.description}</CardDescription>
               </div>
               <div className="flex gap-2">
                 <Button
@@ -270,8 +282,8 @@ export default function ChefyY() {
                   variant="outline"
                   size="icon"
                   className={cn(
-                    "border-white/30 hover:bg-white/10",
-                    isRecipeFavorite(selectedRecipe.id) ? "text-pink-400" : "text-white",
+                    "border-black/10 dark:border-white/30 hover:bg-black/5 dark:hover:bg-white/10",
+                    isRecipeFavorite(selectedRecipe.id) ? "text-pink-400" : "text-foreground",
                   )}
                 >
                   <Heart className={cn("w-5 h-5", isRecipeFavorite(selectedRecipe.id) && "fill-current")} />
@@ -280,7 +292,7 @@ export default function ChefyY() {
                   onClick={() => setShowSubstitution(true)}
                   variant="outline"
                   size="sm"
-                  className="text-white hover:bg-white/10 border-white/30"
+                  className="text-foreground hover:bg-black/5 dark:hover:bg-white/10 border-black/10 dark:border-white/30"
                 >
                   <ArrowRightLeft className="w-4 h-4 mr-2" />
                   Substitute
@@ -289,7 +301,7 @@ export default function ChefyY() {
                   onClick={() => setShowChat(true)}
                   variant="outline"
                   size="sm"
-                  className="text-white hover:bg-white/10 border-white/30"
+                  className="text-foreground hover:bg-black/5 dark:hover:bg-white/10 border-black/10 dark:border-white/30"
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Ask Questions
@@ -298,69 +310,69 @@ export default function ChefyY() {
                   onClick={() => setSelectedRecipe(null)}
                   variant="ghost"
                   size="icon"
-                  className="text-white hover:bg-white/10"
+                  className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
                 >
                   <X className="w-5 h-5" />
                 </Button>
               </div>
             </div>
             <div className="flex gap-4 mt-4">
-              <Badge className="bg-pink-500/80 text-white">
-                <Clock className="w-3 h-3 mr-1" />
-                {selectedRecipe.cookingTime} min
-              </Badge>
-              <Badge className="bg-purple-500/80 text-white">
-                <Utensils className="w-3 h-3 mr-1" />
-                {selectedRecipe.servings} servings
-              </Badge>
-              <Badge className="bg-indigo-500/80 text-white">{selectedRecipe.difficulty}</Badge>
+                  <Badge className="bg-pink-500/80 text-white">
+                    <Clock className="w-3 h-3 mr-1" />
+                    {selectedRecipe.cookingTime} min
+                  </Badge>
+                  <Badge className="bg-purple-500/80 text-white">
+                    <Utensils className="w-3 h-3 mr-1" />
+                    {selectedRecipe.servings} servings
+                  </Badge>
+                  <Badge className="bg-indigo-500/80 text-white">{selectedRecipe.difficulty}</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <h3 className="text-lg font-semibold text-white mb-3">Ingredients</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-3">Ingredients</h3>
               <div className="grid gap-2">
                 {selectedRecipe.ingredients.map((ingredient, index) => (
-                  <div key={index} className="flex justify-between items-center p-2 rounded-lg bg-white/10">
-                    <span className="text-white">{ingredient.name}</span>
-                    <span className="text-white/80">{ingredient.amount}</span>
+                  <div key={index} className="flex justify-between items-center p-2 rounded-lg glass-surface">
+                    <span className="text-foreground">{ingredient.name}</span>
+                    <span className="text-foreground/80">{ingredient.amount}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <Separator className="bg-white/20" />
+            <Separator className="bg-black/10 dark:bg-white/20" />
 
             <div>
-              <h3 className="text-lg font-semibold text-white mb-3">Instructions</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-3">Instructions</h3>
               <div className="space-y-3">
                 {selectedRecipe.instructions.map((instruction, index) => (
                   <div key={index} className="flex gap-3">
                     <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold">
                       {index + 1}
                     </div>
-                    <p className="text-white/90 leading-relaxed">{instruction}</p>
+                    <p className="text-foreground/90 leading-relaxed">{instruction}</p>
                   </div>
                 ))}
               </div>
             </div>
 
-            <Separator className="bg-white/20" />
+            <Separator className="bg-black/10 dark:bg-white/20" />
 
             <div className="grid md:grid-cols-2 gap-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3">Chef's Tips</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Chef's Tips</h3>
                 <ul className="space-y-2">
                   {selectedRecipe.tips.map((tip, index) => (
-                    <li key={index} className="text-white/80 text-sm">
-                      • {tip}
+                    <li key={index} className="text-foreground/80 text-sm">
+                      - {tip}
                     </li>
                   ))}
                 </ul>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white mb-3">Presentation</h3>
-                <p className="text-white/80 text-sm leading-relaxed">{selectedRecipe.presentation}</p>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Presentation</h3>
+                <p className="text-foreground/80 text-sm leading-relaxed">{selectedRecipe.presentation}</p>
               </div>
             </div>
           </CardContent>
@@ -371,12 +383,12 @@ export default function ChefyY() {
     // Recipe list view
     return (
       <div className="space-y-4">
-        {recipes.length > 0 && <h2 className="text-2xl font-bold text-white mb-4">Generated Recipes</h2>}
+        {recipes.length > 0 && <h2 className="text-2xl font-bold text-foreground mb-4">Generated Recipes</h2>}
         {recipes.map((recipe, index) => (
           <Card
             key={recipe.id || index}
             className={cn(
-              "backdrop-blur-lg bg-white/20 border-white/30 shadow-xl cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-white/30",
+              "glass-panel cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:bg-black/5 dark:hover:bg-white/20",
               "transform hover:shadow-2xl",
             )}
             onClick={() => setSelectedRecipe(recipe)}
@@ -384,8 +396,8 @@ export default function ChefyY() {
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div>
-                  <CardTitle className="text-white">{recipe.name}</CardTitle>
-                  <CardDescription className="text-white/70">{recipe.description}</CardDescription>
+                  <CardTitle className="text-foreground">{recipe.name}</CardTitle>
+                  <CardDescription className="text-foreground/70">{recipe.description}</CardDescription>
                 </div>
                 <Button
                   variant="ghost"
@@ -394,7 +406,7 @@ export default function ChefyY() {
                     e.stopPropagation()
                     toggleFavorite(recipe)
                   }}
-                  className={cn("hover:bg-white/10", isRecipeFavorite(recipe.id) ? "text-pink-400" : "text-white/50")}
+                  className={cn("hover:bg-black/5 dark:hover:bg-white/10", isRecipeFavorite(recipe.id) ? "text-pink-400" : "text-foreground/50")}
                 >
                   <Heart className={cn("w-5 h-5", isRecipeFavorite(recipe.id) && "fill-current")} />
                 </Button>
@@ -411,10 +423,10 @@ export default function ChefyY() {
           </Card>
         ))}
         {recipes.length === 0 && !isGenerating && !error && (
-          <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl">
+          <Card className="glass-panel">
             <CardContent className="text-center py-12">
-              <ChefHat className="w-16 h-16 mx-auto text-white/50 mb-4" />
-              <p className="text-white/70 text-lg">Add some ingredients and let's cook up something amazing!</p>
+              <ChefHat className="w-16 h-16 mx-auto text-foreground/50 mb-4" />
+              <p className="text-foreground/70 text-lg">Add some ingredients and let's cook up something amazing!</p>
             </CardContent>
           </Card>
         )}
@@ -428,7 +440,7 @@ export default function ChefyY() {
           />
         )}
         {recipes.length === 0 && isGenerating && (
-          <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl">
+          <Card className="glass-panel">
             <CardContent className="text-center py-12">
               <div className="animate-pulse">
                 <Zap className="w-16 h-16 mx-auto text-green-400 mb-4" />
@@ -441,8 +453,158 @@ export default function ChefyY() {
     )
   }
 
+  const RecipeGeneratorPanel = () => (
+    <Card className="glass-panel">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-foreground">
+          <ChefHat className="w-5 h-5" />
+          Recipe Generator
+        </CardTitle>
+        <CardDescription className="text-foreground/70">Tell me what you have, and I'll create magic!</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Ingredients */}
+        <div>
+          <Label className="text-foreground font-medium">Available Ingredients</Label>
+          <div className="flex gap-2 mt-2">
+            <Input
+              placeholder="Add ingredient..."
+              value={currentIngredient}
+              onChange={(e) => setCurrentIngredient(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && addIngredient()}
+              className="glass-input"
+            />
+            <Button onClick={addIngredient} size="icon" className="bg-pink-500 hover:bg-pink-600 text-white">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {ingredients.map((ingredient) => (
+              <Badge
+                key={ingredient}
+                variant="secondary"
+                className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 cursor-pointer"
+                onClick={() => removeIngredient(ingredient)}
+              >
+                {ingredient} <X className="w-3 h-3 ml-1" />
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        {/* Cooking Methods */}
+        <div>
+          <Label className="text-foreground font-medium">Preferred Cooking Methods</Label>
+          <div className="flex gap-2 mt-2">
+            <Input
+              placeholder="e.g., baking, frying..."
+              value={currentMethod}
+              onChange={(e) => setCurrentMethod(e.target.value)}
+              onKeyPress={(e) => e.key === "Enter" && addCookingMethod()}
+              className="glass-input"
+            />
+            <Button onClick={addCookingMethod} size="icon" className="bg-purple-500 hover:bg-purple-600 text-white">
+              <Plus className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {cookingMethods.map((method) => (
+              <Badge
+                key={method}
+                variant="secondary"
+                className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 cursor-pointer"
+                onClick={() => removeCookingMethod(method)}
+              >
+                {method} <X className="w-3 h-3 ml-1" />
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        {/* Cooking Time */}
+        <div>
+          <Label className="text-foreground font-medium">Cooking Time (minutes, optional)</Label>
+          <Input
+            type="number"
+            placeholder="30"
+            value={cookingTime}
+            onChange={(e) => setCookingTime(e.target.value)}
+            className="glass-input mt-2"
+          />
+        </div>
+
+        <Button
+          onClick={generateRecipes}
+          disabled={ingredients.length === 0 || isGenerating}
+          className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-medium py-3 transition-all duration-300 transform hover:scale-105"
+        >
+          {isGenerating ? (
+            <>
+              <Sparkles className="w-4 h-4 mr-2 animate-spin" />
+              Generating Magic...
+            </>
+          ) : (
+            <>
+              <Zap className="w-4 h-4 mr-2" />
+              Generate with Groq
+            </>
+          )}
+        </Button>
+
+        {/* Save/Load */}
+        <div className="flex gap-2">
+          <Button
+            onClick={exportRecipes}
+            disabled={recipes.length === 0}
+            variant="outline"
+            className="flex-1 border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10 bg-transparent"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Export
+          </Button>
+          <div className="flex-1">
+            <input type="file" accept=".json" onChange={loadRecipes} className="hidden" id="load-recipes" />
+            <Button
+              onClick={() => document.getElementById("load-recipes")?.click()}
+              variant="outline"
+              className="w-full border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Import
+            </Button>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            onClick={() => {
+              setShowSubstitution(true)
+              setShowChat(false)
+              setShowHistory(false)
+              setShowFavorites(false)
+            }}
+            variant="outline"
+            className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            <ArrowRightLeft className="w-4 h-4 mr-2" />
+            Substitutions
+          </Button>
+          <Button
+            onClick={openChatPanel}
+            variant="outline"
+            className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+          >
+            <MessageCircle className="w-4 h-4 mr-2" />
+            Ask Chefy
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-indigo-400 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-rose-100 via-amber-50 to-indigo-200 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 flex flex-col">
       <Header
         onShowHistory={() => {
           setShowHistory(true)
@@ -450,6 +612,7 @@ export default function ChefyY() {
           setShowSubstitution(false)
           setShowFavorites(false)
           setSelectedRecipe(null)
+          setIsGeneratorOpen(false)
         }}
         onShowFavorites={() => {
           setShowFavorites(true)
@@ -457,179 +620,99 @@ export default function ChefyY() {
           setShowChat(false)
           setShowSubstitution(false)
           setSelectedRecipe(null)
+          setIsGeneratorOpen(false)
         }}
       />
 
-      <main className="flex-1 p-4">
-        <div className="container mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-3 gap-6">
-            {/* Input Panel */}
-            <div className="lg:col-span-1 space-y-6">
-              <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-white">
-                    <ChefHat className="w-5 h-5" />
-                    Recipe Generator
-                  </CardTitle>
-                  <CardDescription className="text-white/70">
-                    Tell me what you have, and I'll create magic!
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Ingredients */}
-                  <div>
-                    <Label className="text-white font-medium">Available Ingredients</Label>
-                    <div className="flex gap-2 mt-2">
-                      <Input
-                        placeholder="Add ingredient..."
-                        value={currentIngredient}
-                        onChange={(e) => setCurrentIngredient(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && addIngredient()}
-                        className="backdrop-blur-sm bg-white/20 border-white/30 text-white placeholder:text-white/50"
-                      />
-                      <Button onClick={addIngredient} size="icon" className="bg-pink-500 hover:bg-pink-600">
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {ingredients.map((ingredient) => (
-                        <Badge
-                          key={ingredient}
-                          variant="secondary"
-                          className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600 cursor-pointer"
-                          onClick={() => removeIngredient(ingredient)}
-                        >
-                          {ingredient} <X className="w-3 h-3 ml-1" />
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Cooking Methods */}
-                  <div>
-                    <Label className="text-white font-medium">Preferred Cooking Methods</Label>
-                    <div className="flex gap-2 mt-2">
-                      <Input
-                        placeholder="e.g., baking, frying..."
-                        value={currentMethod}
-                        onChange={(e) => setCurrentMethod(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && addCookingMethod()}
-                        className="backdrop-blur-sm bg-white/20 border-white/30 text-white placeholder:text-white/50"
-                      />
-                      <Button onClick={addCookingMethod} size="icon" className="bg-purple-500 hover:bg-purple-600">
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </div>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {cookingMethods.map((method) => (
-                        <Badge
-                          key={method}
-                          variant="secondary"
-                          className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:from-purple-600 hover:to-indigo-600 cursor-pointer"
-                          onClick={() => removeCookingMethod(method)}
-                        >
-                          {method} <X className="w-3 h-3 ml-1" />
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Cooking Time */}
-                  <div>
-                    <Label className="text-white font-medium">Cooking Time (minutes, optional)</Label>
-                    <Input
-                      type="number"
-                      placeholder="30"
-                      value={cookingTime}
-                      onChange={(e) => setCookingTime(e.target.value)}
-                      className="backdrop-blur-sm bg-white/20 border-white/30 text-white placeholder:text-white/50 mt-2"
-                    />
-                  </div>
-
+      <main className="flex-1 px-4 pb-10 pt-6">
+        <div className="container mx-auto max-w-7xl space-y-8">
+          <section className="relative overflow-hidden rounded-3xl border border-black/10 bg-white/80 shadow-2xl dark:border-white/10 dark:bg-white/10">
+            <div className="absolute -top-24 right-10 h-64 w-64 rounded-full bg-gradient-to-br from-pink-400/40 to-purple-500/40 blur-3xl dark:from-pink-500/20 dark:to-purple-500/20" />
+            <div className="absolute -bottom-32 left-10 h-64 w-64 rounded-full bg-gradient-to-tr from-amber-300/50 to-indigo-400/40 blur-3xl dark:from-amber-400/15 dark:to-indigo-400/20" />
+            <div className="relative grid gap-8 p-8 md:grid-cols-[1.2fr_0.8fr] md:p-12">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-foreground/60">
+                  AI Kitchen Companion
+                </p>
+                <h1 className="mt-4 text-4xl font-extrabold text-foreground md:text-5xl">
+                  Cook with confidence, even when the fridge looks empty.
+                </h1>
+                <p className="mt-4 text-lg text-foreground/70">
+                  Drop in what you have, choose your cooking style, and let Chefy.Y build a personalized recipe plan in
+                  seconds.
+                </p>
+                <div className="mt-6 flex flex-wrap gap-3">
                   <Button
-                    onClick={generateRecipes}
-                    disabled={ingredients.length === 0 || isGenerating}
-                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-medium py-3 transition-all duration-300 transform hover:scale-105"
+                    onClick={() => setIsGeneratorOpen(true)}
+                    className="bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600"
                   >
-                    {isGenerating ? (
-                      <>
-                        <Sparkles className="w-4 h-4 mr-2 animate-spin" />
-                        Generating Magic...
-                      </>
-                    ) : (
-                      <>
-                        <Zap className="w-4 h-4 mr-2" />
-                        Generate with Groq
-                      </>
-                    )}
+                    Let&apos;s cook
                   </Button>
-
-                  {/* Save/Load */}
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={exportRecipes}
-                      disabled={recipes.length === 0}
-                      variant="outline"
-                      className="flex-1 border-white/30 text-white hover:bg-white/10 bg-transparent"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Export
-                    </Button>
-                    <div className="flex-1">
-                      <input type="file" accept=".json" onChange={loadRecipes} className="hidden" id="load-recipes" />
-                      <Button
-                        onClick={() => document.getElementById("load-recipes")?.click()}
-                        variant="outline"
-                        className="w-full border-white/30 text-white hover:bg-white/10"
-                      >
-                        <Upload className="w-4 h-4 mr-2" />
-                        Import
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Quick Actions */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button
-                      onClick={() => {
-                        setShowSubstitution(true)
-                        setShowChat(false)
-                        setShowHistory(false)
-                        setShowFavorites(false)
-                      }}
-                      variant="outline"
-                      className="border-white/30 text-white hover:bg-white/10"
-                    >
-                      <ArrowRightLeft className="w-4 h-4 mr-2" />
-                      Substitutions
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setShowChat(true)
-                        setShowHistory(false)
-                        setShowSubstitution(false)
-                        setShowFavorites(false)
-                        setSelectedChatHistory(null)
-                      }}
-                      variant="outline"
-                      className="border-white/30 text-white hover:bg-white/10"
-                    >
-                      <MessageCircle className="w-4 h-4 mr-2" />
-                      Ask Chef
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  <Button
+                    onClick={openChatPanel}
+                    variant="outline"
+                    className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+                  >
+                    Ask Chefy
+                  </Button>
+                </div>
+              </div>
+              <div className="grid gap-4">
+                <div className="rounded-2xl border border-black/10 bg-white/70 p-4 shadow-lg dark:border-white/20 dark:bg-white/10">
+                  <p className="text-sm font-semibold text-foreground">Smart recipes</p>
+                  <p className="mt-2 text-sm text-foreground/70">
+                    Tailored to your ingredients, cooking method, and time.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-black/10 bg-white/70 p-4 shadow-lg dark:border-white/20 dark:bg-white/10">
+                  <p className="text-sm font-semibold text-foreground">Instant guidance</p>
+                  <p className="mt-2 text-sm text-foreground/70">
+                    Ask Chefy for swaps, tips, or step-by-step help anytime.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-black/10 bg-white/70 p-4 shadow-lg dark:border-white/20 dark:bg-white/10">
+                  <p className="text-sm font-semibold text-foreground">Save favorites</p>
+                  <p className="mt-2 text-sm text-foreground/70">
+                    Keep the recipes you love and export them in one click.
+                  </p>
+                </div>
+              </div>
             </div>
+          </section>
 
-            {/* Results Panel */}
-            <div className="lg:col-span-2">{renderRightPanel()}</div>
-          </div>
+          <div>{renderRightPanel()}</div>
         </div>
       </main>
+
+      <Sheet open={isGeneratorOpen} onOpenChange={setIsGeneratorOpen}>
+        <SheetContent side="bottom" className="glass-panel-strong max-h-[90vh] overflow-y-auto rounded-t-3xl">
+          <SheetHeader className="text-left">
+            <SheetTitle className="text-2xl text-foreground">Recipe Generator</SheetTitle>
+            <SheetDescription className="text-foreground/70">
+              Tell me what you have, then tap generate to get inspired.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="mt-6">
+            <RecipeGeneratorPanel />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <Button
+        onClick={() => setIsGeneratorOpen(true)}
+        size="icon"
+        className="fixed bottom-6 right-6 z-40 h-14 w-14 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-xl hover:from-pink-600 hover:to-purple-600"
+        aria-label="Open recipe generator"
+      >
+        <ChefHat className="h-6 w-6" />
+      </Button>
 
       <Footer />
       <CookieConsent />
     </div>
   )
 }
+
+
+
+

@@ -52,10 +52,10 @@ export function ChatHistoryPanel({ onSelectHistory, onClose }: ChatHistoryPanelP
   }
 
   return (
-    <Card className="backdrop-blur-lg bg-white/20 border-white/30 shadow-xl h-[600px] flex flex-col">
-      <CardHeader className="pb-3 border-b border-white/20">
+    <Card className="glass-panel h-[600px] flex flex-col">
+      <CardHeader className="pb-3 border-b border-black/10 dark:border-white/20">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-white flex items-center gap-2">
+          <CardTitle className="text-foreground flex items-center gap-2">
             <History className="w-5 h-5" />
             Chat History
           </CardTitle>
@@ -68,15 +68,15 @@ export function ChatHistoryPanel({ onSelectHistory, onClose }: ChatHistoryPanelP
                     Clear All
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="backdrop-blur-xl bg-purple-900/95 border-white/20">
+                <AlertDialogContent className="backdrop-blur-xl bg-white/95 dark:bg-slate-950/95 border-black/10 dark:border-white/20">
                   <AlertDialogHeader>
-                    <AlertDialogTitle className="text-white">Clear All Chat History?</AlertDialogTitle>
-                    <AlertDialogDescription className="text-white/70">
+                    <AlertDialogTitle className="text-foreground">Clear All Chat History?</AlertDialogTitle>
+                    <AlertDialogDescription className="text-foreground/70">
                       This will permanently delete all your saved chat conversations. This action cannot be undone.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel className="border-white/30 text-white hover:bg-white/10">
+                    <AlertDialogCancel className="border-black/10 dark:border-white/30 text-foreground hover:bg-black/5 dark:hover:bg-white/10">
                       Cancel
                     </AlertDialogCancel>
                     <AlertDialogAction onClick={handleClearAll} className="bg-red-500 hover:bg-red-600 text-white">
@@ -86,7 +86,12 @@ export function ChatHistoryPanel({ onSelectHistory, onClose }: ChatHistoryPanelP
                 </AlertDialogContent>
               </AlertDialog>
             )}
-            <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/10">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="text-foreground hover:bg-black/5 dark:hover:bg-white/10"
+            >
               <X className="w-5 h-5" />
             </Button>
           </div>
@@ -97,28 +102,30 @@ export function ChatHistoryPanel({ onSelectHistory, onClose }: ChatHistoryPanelP
           <div className="p-4 space-y-3">
             {histories.length === 0 ? (
               <div className="text-center py-12">
-                <MessageCircle className="w-12 h-12 mx-auto text-white/30 mb-3" />
-                <p className="text-white/50">No chat history yet</p>
-                <p className="text-white/40 text-sm mt-1">Start a conversation with the cooking assistant</p>
+                <MessageCircle className="w-12 h-12 mx-auto text-foreground/30 mb-3" />
+                <p className="text-foreground/50">No chat history yet</p>
+                <p className="text-foreground/40 text-sm mt-1">Start a conversation with the cooking assistant</p>
               </div>
             ) : (
               histories.map((history) => (
                 <div
                   key={history.id}
-                  className="group p-4 rounded-lg bg-white/10 hover:bg-white/20 transition-all cursor-pointer"
+                  className="group p-4 rounded-lg glass-surface hover:bg-black/10 dark:hover:bg-white/20 transition-all cursor-pointer"
                   onClick={() => onSelectHistory(history)}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <ChefHat className="w-4 h-4 text-pink-400 flex-shrink-0" />
-                        <span className="text-white font-medium truncate">{history.recipeName || "General Chat"}</span>
+                        <span className="text-foreground font-medium truncate">
+                          {history.recipeName || "General Chat"}
+                        </span>
                       </div>
-                      <p className="text-white/60 text-sm truncate">
+                      <p className="text-foreground/60 text-sm truncate">
                         {history.messages[history.messages.length - 1]?.content.slice(0, 60)}...
                       </p>
-                      <p className="text-white/40 text-xs mt-2">
-                        {formatDate(history.updatedAt)} · {history.messages.length} messages
+                      <p className="text-foreground/40 text-xs mt-2">
+                        {formatDate(history.updatedAt)} - {history.messages.length} messages
                       </p>
                     </div>
                     <Button

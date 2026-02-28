@@ -1,11 +1,11 @@
 "use client"
 
 import Link from "next/link"
-import { ChefHat, Zap, Menu, History, Heart } from "lucide-react"
+import { ChefHat, Menu, History, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 interface HeaderProps {
   onShowHistory?: () => void
@@ -25,7 +25,7 @@ export function Header({ onShowHistory, onShowFavorites }: HeaderProps) {
             onShowHistory()
             setIsOpen(false)
           }}
-          className="text-white/80 hover:text-white hover:bg-white/10"
+          className="text-foreground/80 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10"
         >
           <History className="w-4 h-4 mr-2" />
           Chat History
@@ -39,27 +39,17 @@ export function Header({ onShowHistory, onShowFavorites }: HeaderProps) {
             onShowFavorites()
             setIsOpen(false)
           }}
-          className="text-white/80 hover:text-white hover:bg-white/10"
+          className="text-foreground/80 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10"
         >
           <Heart className="w-4 h-4 mr-2" />
           Saved Recipes
         </Button>
       )}
-      <Link href="/terms">
-        <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10">
-          Terms
-        </Button>
-      </Link>
-      <Link href="/privacy">
-        <Button variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10">
-          Privacy
-        </Button>
-      </Link>
     </>
   )
 
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/10 border-b border-white/20">
+    <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/80 dark:bg-white/10 border-b border-black/10 dark:border-white/20">
       <div className="container mx-auto max-w-7xl px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -78,25 +68,22 @@ export function Header({ onShowHistory, onShowFavorites }: HeaderProps) {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-2">
             <NavLinks />
-            <Badge className="ml-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0">
-              <Zap className="w-3 h-3 mr-1" />
-              Powered by Groq
-            </Badge>
+            <ThemeToggle className="ml-2" />
           </nav>
 
           {/* Mobile Menu */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+              <Button variant="ghost" size="icon" className="text-foreground hover:bg-black/5 dark:hover:bg-white/10">
                 <Menu className="w-6 h-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="backdrop-blur-xl bg-purple-900/90 border-white/20">
+            <SheetContent
+              side="right"
+              className="backdrop-blur-xl bg-white/95 dark:bg-slate-950/95 border-black/10 dark:border-white/20"
+            >
               <div className="flex flex-col gap-4 mt-8">
-                <Badge className="w-fit bg-gradient-to-r from-green-500 to-emerald-600 text-white border-0">
-                  <Zap className="w-3 h-3 mr-1" />
-                  Powered by Groq
-                </Badge>
+                <ThemeToggle />
                 <nav className="flex flex-col gap-2">
                   <NavLinks />
                 </nav>
