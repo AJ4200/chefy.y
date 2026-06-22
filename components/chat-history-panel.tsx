@@ -120,7 +120,7 @@ export function ChatHistoryPanel({ onSelectHistory, onClose }: ChatHistoryPanelP
                       <div className="flex items-center gap-2 mb-1">
                         <ChefHat className="w-4 h-4 text-pink-400 flex-shrink-0" />
                         <span className="text-foreground font-medium truncate">
-                          {history.recipeName || "General Chat"}
+                          {history.title}
                         </span>
                       </div>
                       <p className="text-foreground/60 text-sm truncate">

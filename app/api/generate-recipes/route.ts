@@ -54,7 +54,7 @@ For each recipe, provide:
 - tips: array of 2-3 helpful tips
 - presentation: how to serve and present the dish
 
-Make recipes practical and delicious.
+Make recipes practical and delicious. Every generated field must be specific to the provided ingredients; do not use generic filler such as "Recipe Name", "Brief description", "Step 1", "Tip 1", or placeholder amounts.
 Return only valid JSON with a top-level "recipes" array.`
 
     const text = await createGroqCompletion(
@@ -71,6 +71,10 @@ Return only valid JSON with a top-level "recipes" array.`
     const parsed = safeParseJson(text)
     const validated = recipeSchema.safeParse(parsed)
 
+    if (validated.success && containsFillerRecipeData(validated.data.recipes)) {
+      throw new Error("Model returned generic recipe filler")
+    }
+
     if (!validated.success) {
       throw new Error("Model returned an invalid recipe payload")
     }
@@ -81,24 +85,10 @@ Return only valid JSON with a top-level "recipes" array.`
 
     try {
       const fallbackPrompt = `Create 3 simple recipes using: ${ingredients.join(", ")}.
-      
-Format as valid JSON with this structure:
-{
-  "recipes": [
-    {
-      "name": "Recipe Name",
-      "description": "Brief description",
-      "cookingTime": 30,
-      "servings": 4,
-      "difficulty": "Easy",
-      "ingredients": [{"name": "ingredient", "amount": "1 cup"}],
-      "instructions": ["Step 1", "Step 2"],
-      "cookingMethod": "baking",
-      "tips": ["Tip 1", "Tip 2"],
-      "presentation": "How to serve"
-    }
-  ]
-}`
+
+Return strict JSON with a top-level "recipes" array. Each recipe must include name, description, cookingTime, servings, difficulty, ingredients, instructions, cookingMethod, tips, and presentation.
+
+Every value must be specific to the requested ingredients. Do not use generic filler or placeholders such as "Recipe Name", "Brief description", "ingredient", "Step 1", "Tip 1", or "How to serve".`
 
       const fallbackText = await createGroqCompletion(
         [
@@ -110,6 +100,9 @@ Format as valid JSON with this structure:
 
       const parsedFallback = safeParseJson(fallbackText)
       const validatedFallback = recipeSchema.safeParse(parsedFallback)
+      if (validatedFallback.success && containsFillerRecipeData(validatedFallback.data.recipes)) {
+        throw new Error("Fallback returned generic recipe filler")
+      }
       if (!validatedFallback.success) {
         throw new Error("Fallback payload did not match schema")
       }
@@ -130,4 +123,20 @@ function safeParseJson(text: string) {
     const candidate = codeFenceMatch ? codeFenceMatch[1] : text
     return JSON.parse(candidate)
   }
+}
+
+function containsFillerRecipeData(recipes: z.infer<typeof recipeSchema>["recipes"]) {
+  const fillerPattern = /^(recipe name|brief description|ingredient|step \d+|tip \d+|how to serve)$/i
+
+  return recipes.some((recipe) =>
+    [
+      recipe.name,
+      recipe.description,
+      recipe.cookingMethod,
+      recipe.presentation,
+      ...recipe.ingredients.flatMap((ingredient) => [ingredient.name, ingredient.amount, ingredient.preparation || ""]),
+      ...recipe.instructions,
+      ...recipe.tips,
+    ].some((value) => fillerPattern.test(value.trim())),
+  )
 }

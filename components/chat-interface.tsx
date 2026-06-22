@@ -34,9 +34,11 @@ export function ChatInterface({ recipe, onClose, existingHistory }: ChatInterfac
       },
     ]
   })
+  const [chatTitle, setChatTitle] = useState(() => existingHistory?.title || recipe?.name || "")
   const [isLoading, setIsLoading] = useState(false)
   const [showImageUpload, setShowImageUpload] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const titleRequestedRef = useRef(false)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -48,13 +50,54 @@ export function ChatInterface({ recipe, onClose, existingHistory }: ChatInterfac
         id: historyId,
         recipeId: recipe?.id,
         recipeName: recipe?.name,
+        title: chatTitle,
         messages,
         createdAt: existingHistory?.createdAt || new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
       saveChatHistory(history)
     }
-  }, [messages, historyId, recipe, existingHistory?.createdAt])
+  }, [messages, historyId, recipe, existingHistory?.createdAt, chatTitle])
+
+  useEffect(() => {
+    if (chatTitle || messages.length <= 1 || titleRequestedRef.current) return
+
+    titleRequestedRef.current = true
+    const controller = new AbortController()
+
+    async function generateChatTitle() {
+      try {
+        const response = await fetch("/api/chat-title", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            messages: messages.map(({ role, content }) => ({ role, content })),
+            recipeContext: recipe,
+          }),
+          signal: controller.signal,
+        })
+
+        if (!response.ok) {
+          titleRequestedRef.current = false
+          return
+        }
+
+        const data = await response.json()
+        if (typeof data?.title === "string" && data.title.trim()) {
+          setChatTitle(data.title.trim())
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          titleRequestedRef.current = false
+          console.error("Error generating chat title:", error)
+        }
+      }
+    }
+
+    generateChatTitle()
+
+    return () => controller.abort()
+  }, [chatTitle, messages.length, recipe])
 
   const handleSendMessage = async (content: string, imageUrl?: string) => {
     const userMessage: ChatMessageType = {

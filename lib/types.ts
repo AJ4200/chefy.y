@@ -30,6 +30,7 @@ export interface ChatHistory {
   id: string
   recipeId?: string
   recipeName?: string
+  title: string
   messages: ChatMessage[]
   createdAt: string
   updatedAt: string
